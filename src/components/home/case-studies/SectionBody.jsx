@@ -236,25 +236,21 @@ const scrollToNextCard = useCallback(() => {
     return targetScroll;
   }, []);
 
-  // Scroll to center a specific card
-  // Scroll to position a specific card at the left
+ 
+// Scroll to center a specific card - simpler version
 const scrollToCardCenter = useCallback((cardIndex) => {
   if (!scrollContainerRef.current) return;
   
   const container = scrollContainerRef.current;
-  const containerWidth = container.clientWidth;
   
-  // For left alignment: card position + viewport padding (50vw) - left margin
-  const cardPosition = (cardIndex * CARD_WIDTH);
-  const viewportPadding = window.innerWidth * 0.3; // 50vw
-  const leftMargin = 84; // 4rem padding from CaseStudiesContainer
-  
-  const targetScroll = cardPosition + viewportPadding - leftMargin;
+  // Calculate position to scroll to (card index * card width)
+  const targetScroll = cardIndex * CARD_WIDTH;
   
   container.scrollTo({
     left: targetScroll,
     behavior: 'smooth'
   });
+  
 }, [CARD_WIDTH]);
 
   const handleProgressMouseDown = useCallback((e) => {
@@ -489,17 +485,21 @@ const scrollToCardCenter = useCallback((cardIndex) => {
         </HintContent>
       </ScrollHint>
 
-      {/* Progress indicator */}
+
+{/* Progress indicator */}
+  {/* Progress indicator */}
 <ScrollProgress 
   onMouseDown={handleProgressMouseDown}
   data-progress-bar
 >
   <ProgressBar style={{ width: `${scrollProgress}%` }} />
-  {/* Indicator dots for each card - only show 4 dots */}
-  {caseStudies.slice(0, 4).map((_, index) => {
-    // For 4 dots, position them at 0%, 33.33%, 66.66%, 100%
-    const position = (index / 3) * 100;
-    const cardScrollPosition = (index * CARD_WIDTH);
+  
+  {/* 5 dots evenly spaced for all cards */}
+  {[0, 1, 2, 3, 4].map((cardIndex) => {
+    // Position 5 dots at 0%, 25%, 50%, 75%, 100%
+    const position = (cardIndex / 4) * 100;
+    
+    const cardScrollPosition = (cardIndex * CARD_WIDTH);
     const containerWidth = scrollContainerRef.current?.clientWidth || 0;
     const currentScroll = scrollContainerRef.current?.scrollLeft || 0;
     const viewportPadding = window.innerWidth * 0.5;
@@ -508,17 +508,18 @@ const scrollToCardCenter = useCallback((cardIndex) => {
     
     return (
       <ProgressDot 
-        key={index} 
+        key={cardIndex} 
         style={{ left: `${position}%` }}
         $isActive={isActive}
         onClick={(e) => {
           e.stopPropagation();
-          scrollToCardCenter(index);
+          scrollToCardCenter(cardIndex);
         }}
       />
     );
   })}
 </ScrollProgress>
+
     </SectionBodyContainer>
   );
 };
