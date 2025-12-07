@@ -1,13 +1,13 @@
-// src/components/cases/ProgressIndicator.jsx
-import styled from 'styled-components';
-
+import styled from "styled-components";
+// In ProgressIndicator.jsx, update to accept focusedCardIndex prop:
 const ProgressIndicator = ({ 
   scrollProgress, 
   handleProgressMouseDown, 
   scrollToCardCenter,
   scrollContainerRef,
   CARD_WIDTH,
-  caseStudies 
+  caseStudies,
+  focusedCardIndex // Add this prop
 }) => {
   return (
     <ScrollProgress 
@@ -19,12 +19,8 @@ const ProgressIndicator = ({
       {[0, 1, 2, 3, 4].map((cardIndex) => {
         const position = (cardIndex / 4) * 100;
         
-        const cardScrollPosition = (cardIndex * CARD_WIDTH);
-        const containerWidth = scrollContainerRef?.current?.clientWidth || 0;
-        const currentScroll = scrollContainerRef?.current?.scrollLeft || 0;
-        const viewportPadding = window.innerWidth * 0.5;
-        const cardCenterScroll = cardScrollPosition + viewportPadding - (containerWidth / 2) + (450 / 2);
-        const isActive = Math.abs(currentScroll - cardCenterScroll) < CARD_WIDTH / 2;
+        // Use focusedCardIndex directly instead of calculating isActive
+        const isActive = cardIndex === focusedCardIndex;
         
         return (
           <ProgressDot 

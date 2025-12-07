@@ -11,6 +11,7 @@ export const useCarouselControls = (caseStudies) => {
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isDraggingProgress, setIsDraggingProgress] = useState(false);
+  const [focusedCardIndex, setFocusedCardIndex] = useState(1); // Start with card 2
   
   const lastVelocity = useRef(0);
   const lastTime = useRef(0);
@@ -33,6 +34,36 @@ export const useCarouselControls = (caseStudies) => {
       setCanScrollRight(newCanScrollRight);
     }
   }, []);
+
+  // Function to update focused card based on scroll position
+  const updateFocusedCard = useCallback(() => {
+    if (!scrollContainerRef.current) return;
+    
+    const container = scrollContainerRef.current;
+    const currentScroll = container.scrollLeft;
+    const containerWidth = container.clientWidth;
+    
+    // Calculate which card is closest to being centered
+    const viewportPadding = window.innerWidth * 0.5;
+    let closestCardIndex = 0;
+    let minDistance = Infinity;
+    
+    caseStudies.forEach((_, index) => {
+      const cardScrollPosition = (index * CARD_WIDTH);
+      const cardCenterScroll = cardScrollPosition + viewportPadding - (containerWidth / 2) + (450 / 2);
+      const distance = Math.abs(currentScroll - cardCenterScroll);
+      
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestCardIndex = index;
+      }
+    });
+    
+    // Update focused card if it changed
+    if (closestCardIndex !== focusedCardIndex) {
+      setFocusedCardIndex(closestCardIndex);
+    }
+  }, [CARD_WIDTH, focusedCardIndex, caseStudies]);
 
   const calculateVelocity = useCallback((currentPosition) => {
     const now = Date.now();
@@ -59,11 +90,17 @@ export const useCarouselControls = (caseStudies) => {
         behavior: 'smooth'
       });
       
+      // Update focused card after scroll
       setTimeout(() => {
         updateScrollButtons();
-      }, 100);
+        updateFocusedCard();
+        
+        // Also manually calculate which card we scrolled to
+        const targetCardIndex = Math.round(newScroll / CARD_WIDTH);
+        setFocusedCardIndex(targetCardIndex);
+      }, 300);
     }
-  }, [CARD_WIDTH, updateScrollButtons]);
+  }, [CARD_WIDTH, updateScrollButtons, updateFocusedCard]);
 
   const scrollToNextCard = useCallback(() => {
     if (scrollContainerRef.current) {
@@ -78,11 +115,17 @@ export const useCarouselControls = (caseStudies) => {
         behavior: 'smooth'
       });
       
+      // Update focused card after scroll
       setTimeout(() => {
         updateScrollButtons();
-      }, 100);
+        updateFocusedCard();
+        
+        // Also manually calculate which card we scrolled to
+        const targetCardIndex = Math.round(newScroll / CARD_WIDTH);
+        setFocusedCardIndex(targetCardIndex);
+      }, 300);
     }
-  }, [CARD_WIDTH, updateScrollButtons]);
+  }, [CARD_WIDTH, updateScrollButtons, updateFocusedCard]);
 
   const scrollToCardCenter = useCallback((cardIndex) => {
     if (!scrollContainerRef.current) return;
@@ -94,7 +137,13 @@ export const useCarouselControls = (caseStudies) => {
       left: targetScroll,
       behavior: 'smooth'
     });
-  }, [CARD_WIDTH]);
+    
+    // Update focused card
+    setTimeout(() => {
+      setFocusedCardIndex(cardIndex);
+      updateScrollButtons();
+    }, 300);
+  }, [CARD_WIDTH, updateScrollButtons]);
 
   const handleDragStart = useCallback((clientX) => {
     if (!scrollContainerRef.current) return;
@@ -149,7 +198,12 @@ export const useCarouselControls = (caseStudies) => {
     
     document.body.style.userSelect = '';
     document.body.style.cursor = '';
-  }, []);
+    
+    // Update focused card after drag ends
+    setTimeout(() => {
+      updateFocusedCard();
+    }, 100);
+  }, [updateFocusedCard]);
 
   const updateScrollProgress = useCallback(() => {
     if (scrollContainerRef.current) {
@@ -164,7 +218,8 @@ export const useCarouselControls = (caseStudies) => {
       }
     }
     updateScrollButtons();
-  }, [updateScrollButtons]);
+    updateFocusedCard(); // Also update focused card on scroll
+  }, [updateScrollButtons, updateFocusedCard]);
 
   const scrollToProgressPosition = useCallback((clientX, progressBarElement) => {
     if (!scrollContainerRef.current || !progressBarElement) return;
@@ -244,6 +299,7 @@ export const useCarouselControls = (caseStudies) => {
     scrollProgress,
     isDraggingProgress,
     CARD_WIDTH,
+    focusedCardIndex,
     updateScrollButtons,
     scrollToPrevCard,
     scrollToNextCard,

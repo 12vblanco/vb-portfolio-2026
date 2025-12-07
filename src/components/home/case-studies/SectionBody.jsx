@@ -10,26 +10,28 @@ import { useCarouselControls } from './useCarouselControls';
 
 const SectionBody = () => {
   const {
-    scrollContainerRef,
-    isDragging,
-    showScrollHint,
-    setShowScrollHint,
-    canScrollLeft,
-    canScrollRight,
-    scrollProgress,
-    isDraggingProgress,
-    CARD_WIDTH,
-    scrollToPrevCard,
-    scrollToNextCard,
-    scrollToCardCenter,
-    handleDragStart,
-    handleDragMove,
-    handleDragEnd,
-    updateScrollProgress,
-    handleProgressMouseDown,
-    handleProgressMouseMove,
-    handleProgressMouseUp,
-  } = useCarouselControls(caseStudies);
+  scrollContainerRef,
+  isDragging,
+  showScrollHint,
+  setShowScrollHint,
+  canScrollLeft,
+  canScrollRight,
+  scrollProgress,
+  isDraggingProgress,
+  CARD_WIDTH,
+  focusedCardIndex, // Add this
+  updateScrollButtons,
+  scrollToPrevCard,
+  scrollToNextCard,
+  scrollToCardCenter,
+  handleDragStart,
+  handleDragMove,
+  handleDragEnd,
+  updateScrollProgress,
+  handleProgressMouseDown,
+  handleProgressMouseMove,
+  handleProgressMouseUp,
+} = useCarouselControls(caseStudies);
 
   // Hide scroll hint after 3 seconds
   useEffect(() => {
@@ -185,13 +187,16 @@ const SectionBody = () => {
       >
         <CaseStudiesGrid>
           {caseStudies.map((study, index) => (
-            <CardWrapper 
-              key={study.id}
-              aria-label={`Case study ${index + 1}: ${study.title}`}
-              role="article"
-            >
-              <CaseStudyCard study={study} />
-            </CardWrapper>
+           <CardWrapper 
+            key={study.id}
+            aria-label={`Case study ${index + 1}: ${study.title}`}
+            role="article"
+          >
+              <CaseStudyCard 
+                study={study} 
+                showClickMessage={index === focusedCardIndex} 
+              />
+          </CardWrapper>
           ))}
           <InvisiblePlaceholder />
         </CaseStudiesGrid>
@@ -213,6 +218,7 @@ const SectionBody = () => {
         scrollContainerRef={scrollContainerRef}
         CARD_WIDTH={CARD_WIDTH}
         caseStudies={caseStudies}
+        focusedCardIndex={focusedCardIndex} // Add this
       />
     </SectionBodyContainer>
   );
