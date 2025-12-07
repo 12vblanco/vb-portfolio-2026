@@ -1,0 +1,197 @@
+/* ===== FONT FACES ===== */
+/* Open Sans - Variable font (REGULAR) */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Open_Sans/OpenSans-VariableFont_wdth,wght.ttf') format('truetype');
+}
+
+/* Open Sans - Variable font (ITALIC) */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Open_Sans/OpenSans-Italic-VariableFont_wdth,wght.ttf') format('truetype');
+}
+
+/* Dancing Script - Variable font */
+@font-face {
+  font-family: 'Dancing Script';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/Dancing_Script/DancingScript-VariableFont_wght.ttf') format('truetype');
+}
+
+/* Bree Serif - Regular */
+@font-face {
+  font-family: 'Bree Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/Bree_Serif/BreeSerif-Regular.ttf') format('truetype');
+}
+
+/* Anek Devanagari - Variable font (if you want to use it) */
+@font-face {
+  font-family: 'Anek Devanagari';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Anek_Devanagari/AnekDevanagari-VariableFont_wdth,wght.ttf') format('truetype');
+}
+
+/* ===== CSS RESETS & VARIABLES ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  caret-color: transparent;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --white: #fff;
+  --blue: #023c71;
+  --link-blue: #489FB5;
+  --logo-font: "Open Sans", sans-serif;
+  --text-font: "Open Sans", sans-serif;
+  --hw-font: "Dancing Script", cursive;
+  --header-font: "Bree Serif", serif;
+  color: var(--blue);
+}
+
+/* ===== GLOBAL STYLES ===== */
+html,
+body {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 300px;
+  min-height: 100vh;
+  background: var(--white);
+  color: var(--blue);
+  font-family: var(--text-font);
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-top: 70px;
+  margin-left: 70px;
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+/* ===== TYPOGRAPHY ===== */
+h1 {
+  font-family: var(--header-font);
+  font-size: 84px;
+  letter-spacing: -1.4px;
+  font-weight: 700;
+  line-height: 0.85;
+}
+
+h2 {
+  font-family: var(--header-font);
+  font-size: 39px;
+  letter-spacing: -.4px;
+  font-weight: 500;
+  line-height: 38px;
+}
+
+h3 {
+  font-family: var(--header-font);
+  font-size: 32px;
+  letter-spacing: -0.2px;
+  font-weight: 500;
+}
+h4 {
+  font-family: var(--header-font);
+  font-size: 20px;
+  letter-spacing: -0.2px;
+  font-weight: 500;
+}
+
+p {
+  font-family: var(--text-font);
+  font-size: 20px;
+  text-align: left;
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+/* ===== LINKS ===== */
+a {
+  color: var(--blue);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--link-blue);
+}
+
+/* ===== IMAGES ===== */
+img {
+  pointer-events: none;
+}
+
+/* ===== MEDIA QUERIES ===== */
+@media (max-width: 440px) {
+  #root {
+    margin-left: 0px;
+  }
+  .cookie_container {
+    min-height: 40vh;
+  }
+}
+
+/* ===== UTILITY/COMPONENT STYLES ===== */
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
