@@ -4,17 +4,20 @@ import styled, { keyframes } from 'styled-components';
 import { caseStudies } from '../../../data/CaseStudies';
 import CaseStudyCard from './CaseStudyCard';
 
-
 const SectionBody = () => {
   const scrollContainerRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [showScrollHint, setShowScrollHint] = useState(true);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
   const lastVelocity = useRef(0);
   const lastTime = useRef(0);
   const lastPosition = useRef(0);
 
+  // Card width calculation: 450px (card) + 192px (12rem margin = 6rem * 2 sides)
+  const CARD_WIDTH = 450 + 192; // 642px total per card
   
   // Hide scroll hint after 3 seconds
   useEffect(() => {
@@ -23,6 +26,30 @@ const SectionBody = () => {
     }, 4000);
     return () => clearTimeout(timer);
   }, []);
+
+const updateScrollButtons = useCallback(() => {
+  if (scrollContainerRef.current) {
+    const container = scrollContainerRef.current;
+    const scrollLeft = container.scrollLeft;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    
+    // Use a smaller tolerance
+    const tolerance = 1;
+    const newCanScrollLeft = scrollLeft > tolerance;
+    const newCanScrollRight = scrollLeft < maxScroll - tolerance;
+    
+    // Update regardless of previous state for initial setup
+    setCanScrollLeft(newCanScrollLeft);
+    setCanScrollRight(newCanScrollRight);
+    
+    console.log('Update buttons:', { 
+      scrollLeft, 
+      maxScroll, 
+      canScrollLeft: newCanScrollLeft, 
+      canScrollRight: newCanScrollRight 
+    });
+  }
+}, []); // Remove dependencies to avoid stale state
 
   // Calculate velocity for momentum scrolling
   const calculateVelocity = useCallback((currentPosition) => {
@@ -37,6 +64,48 @@ const SectionBody = () => {
     lastTime.current = now;
     lastPosition.current = currentPosition;
   }, []);
+
+  // Arrow button handlers
+ const scrollToPrevCard = useCallback(() => {
+  if (scrollContainerRef.current) {
+    const container = scrollContainerRef.current;
+    const currentScroll = container.scrollLeft;
+    
+    // Calculate new scroll position
+    const newScroll = Math.max(0, currentScroll - CARD_WIDTH);
+    
+    container.scrollTo({
+      left: newScroll,
+      behavior: 'smooth'
+    });
+    
+    // Force update the button states
+    setTimeout(() => {
+      updateScrollButtons();
+    }, 100);
+  }
+}, [CARD_WIDTH, updateScrollButtons]);
+
+const scrollToNextCard = useCallback(() => {
+  if (scrollContainerRef.current) {
+    const container = scrollContainerRef.current;
+    const currentScroll = container.scrollLeft;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    
+    // Calculate new scroll position
+    const newScroll = Math.min(maxScroll, currentScroll + CARD_WIDTH);
+    
+    container.scrollTo({
+      left: newScroll,
+      behavior: 'smooth'
+    });
+    
+    // Force update the button states
+    setTimeout(() => {
+      updateScrollButtons();
+    }, 100);
+  }
+}, [CARD_WIDTH, updateScrollButtons]);
 
   // Mouse/touch event handlers
   const handleDragStart = useCallback((clientX) => {
@@ -131,8 +200,6 @@ const SectionBody = () => {
     handleDragEnd();
   };
 
-  // REMOVED: handleWheel function - no more horizontal scrolling with mouse wheel
-
   // Add scroll position tracking for progress bar
   const [scrollProgress, setScrollProgress] = useState(0);
   
@@ -148,6 +215,104 @@ const SectionBody = () => {
         setScrollProgress(0);
       }
     }
+    updateScrollButtons();
+  }, [updateScrollButtons]);
+
+  // Progress bar dragging
+  const [isDraggingProgress, setIsDraggingProgress] = useState(false);
+  const progressClickTimeRef = useRef(0);
+
+  const scrollToProgressPosition = useCallback((clientX, progressBarElement) => {
+    if (!scrollContainerRef.current || !progressBarElement) return;
+    
+    const rect = progressBarElement.getBoundingClientRect();
+    const clickX = clientX - rect.left;
+    const percentClicked = Math.max(0, Math.min(100, (clickX / rect.width) * 100));
+    
+    const container = scrollContainerRef.current;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    const targetScroll = (percentClicked / 100) * maxScroll;
+    
+    return targetScroll;
+  }, []);
+
+  // Scroll to center a specific card
+  // Scroll to position a specific card at the left
+const scrollToCardCenter = useCallback((cardIndex) => {
+  if (!scrollContainerRef.current) return;
+  
+  const container = scrollContainerRef.current;
+  const containerWidth = container.clientWidth;
+  
+  // For left alignment: card position + viewport padding (50vw) - left margin
+  const cardPosition = (cardIndex * CARD_WIDTH);
+  const viewportPadding = window.innerWidth * 0.3; // 50vw
+  const leftMargin = 84; // 4rem padding from CaseStudiesContainer
+  
+  const targetScroll = cardPosition + viewportPadding - leftMargin;
+  
+  container.scrollTo({
+    left: targetScroll,
+    behavior: 'smooth'
+  });
+}, [CARD_WIDTH]);
+
+  const handleProgressMouseDown = useCallback((e) => {
+    progressClickTimeRef.current = Date.now();
+    setIsDraggingProgress(true);
+    
+    // Check if clicking near a dot
+    const progressBar = e.currentTarget;
+    const rect = progressBar.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickPercent = (clickX / rect.width) * 100;
+    
+    // Find closest card dot
+    const totalCards = caseStudies.length;
+    let closestCardIndex = 0;
+    let minDistance = Infinity;
+    
+    caseStudies.forEach((_, index) => {
+      const dotPercent = (index / (totalCards - 1)) * 100;
+      const distance = Math.abs(clickPercent - dotPercent);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestCardIndex = index;
+      }
+    });
+    
+    // If clicked within 5% of a dot, snap to that card's center
+    const closestDotPercent = (closestCardIndex / (totalCards - 1)) * 100;
+    if (Math.abs(clickPercent - closestDotPercent) < 5) {
+      scrollToCardCenter(closestCardIndex);
+    } else {
+      // Otherwise use the old free scrolling
+      const targetScroll = scrollToProgressPosition(e.clientX, e.currentTarget);
+      if (targetScroll !== undefined && scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTo({
+          left: targetScroll,
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [scrollToProgressPosition, scrollToCardCenter]);
+
+  const handleProgressMouseMove = useCallback((e) => {
+    if (!isDraggingProgress) return;
+    
+    const progressBar = document.querySelector('[data-progress-bar]');
+    const targetScroll = scrollToProgressPosition(e.clientX, progressBar);
+    
+    if (targetScroll !== undefined && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        left: targetScroll,
+        behavior: 'auto'
+      });
+    }
+  }, [isDraggingProgress, scrollToProgressPosition]);
+
+  const handleProgressMouseUp = useCallback(() => {
+    setIsDraggingProgress(false);
   }, []);
 
   // Add and remove event listeners
@@ -169,6 +334,12 @@ const SectionBody = () => {
     // Scroll event for progress tracking
     container.addEventListener('scroll', updateScrollProgress);
 
+    // Progress bar drag events
+    if (isDraggingProgress) {
+      document.addEventListener('mousemove', handleProgressMouseMove);
+      document.addEventListener('mouseup', handleProgressMouseUp);
+    }
+
     // Prevent default drag behavior for images and links inside cards
     const preventDefaultDrag = (e) => e.preventDefault();
     
@@ -186,7 +357,6 @@ const SectionBody = () => {
     const handleKeyDown = (e) => {
       if (!container) return;
       
-      const scrollAmount = 400;
       const isActiveElementInput = document.activeElement.tagName === 'INPUT' || 
                                    document.activeElement.tagName === 'TEXTAREA';
       
@@ -194,11 +364,11 @@ const SectionBody = () => {
       
       switch(e.key) {
         case 'ArrowLeft':
-          container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+          scrollToPrevCard();
           e.preventDefault();
           break;
         case 'ArrowRight':
-          container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+          scrollToNextCard();
           e.preventDefault();
           break;
         case 'Home':
@@ -234,6 +404,12 @@ const SectionBody = () => {
       // Cleanup scroll event
       container.removeEventListener('scroll', updateScrollProgress);
 
+      // Cleanup progress bar drag events
+      if (isDraggingProgress) {
+        document.removeEventListener('mousemove', handleProgressMouseMove);
+        document.removeEventListener('mouseup', handleProgressMouseUp);
+      }
+
       // Cleanup keyboard events
       window.removeEventListener('keydown', handleKeyDown);
 
@@ -241,7 +417,21 @@ const SectionBody = () => {
       document.body.style.userSelect = '';
       document.body.style.cursor = '';
     };
-  }, [onMouseDown, onMouseMove, onMouseUpOrLeave, onTouchStart, onTouchMove, onTouchEnd, updateScrollProgress]);
+  }, [onMouseDown, onMouseMove, onMouseUpOrLeave, onTouchStart, onTouchMove, onTouchEnd, updateScrollProgress, scrollToNextCard, scrollToPrevCard, isDraggingProgress, handleProgressMouseMove, handleProgressMouseUp]);
+
+  // Scroll to card 2 on initial load
+  useEffect(() => {
+    const initialScroll = () => {
+      if (scrollContainerRef.current) {
+        // Small delay to ensure DOM is fully rendered
+        setTimeout(() => {
+          scrollToCardCenter(1); // index 1 is card 2
+        }, 100);
+      }
+    };
+
+    initialScroll();
+  }, [scrollToCardCenter]);
 
   return (
     <SectionBodyContainer>
@@ -254,17 +444,42 @@ const SectionBody = () => {
         tabIndex={0} // Make it focusable for keyboard navigation
       >
         <CaseStudiesGrid>
-          {caseStudies.map((study, index) => (
-            <CardWrapper 
-              key={study.id}
-              aria-label={`Case study ${index + 1}: ${study.title}`}
-              role="article"
-            >
-              <CaseStudyCard study={study} />
-            </CardWrapper>
-          ))}
-        </CaseStudiesGrid>
+  {caseStudies.map((study, index) => (
+    <CardWrapper 
+      key={study.id}
+      aria-label={`Case study ${index + 1}: ${study.title}`}
+      role="article"
+    >
+      <CaseStudyCard study={study} />
+    </CardWrapper>
+  ))}
+  {/* Add 2 invisible placeholder cards for white space */}
+  <InvisiblePlaceholder />
+</CaseStudiesGrid>
       </CaseStudiesContainer>
+
+      {/* Navigation Arrows */}
+      <ArrowButton 
+        $position="left" 
+        onClick={scrollToPrevCard}
+        disabled={!canScrollLeft}
+        aria-label="Previous case study"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </ArrowButton>
+
+      <ArrowButton 
+        $position="right" 
+        onClick={scrollToNextCard}
+        disabled={!canScrollRight}
+        aria-label="Next case study"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </ArrowButton>
 
       {/* Scroll hint - only shows briefly on first load */}
       <ScrollHint $isVisible={showScrollHint}>
@@ -275,21 +490,41 @@ const SectionBody = () => {
       </ScrollHint>
 
       {/* Progress indicator */}
-      <ScrollProgress>
-        <ProgressBar style={{ width: `${scrollProgress}%` }} />
-      </ScrollProgress>
-
-      {/* Keyboard navigation hint */}
-    <KeyboardHint>
-      <Kbd>←</Kbd>
-      <Kbd>→</Kbd>
-        <HintTextSmall>Drag or Arrow keys to navigate</HintTextSmall>
-    </KeyboardHint>
+<ScrollProgress 
+  onMouseDown={handleProgressMouseDown}
+  data-progress-bar
+>
+  <ProgressBar style={{ width: `${scrollProgress}%` }} />
+  {/* Indicator dots for each card - only show 4 dots */}
+  {caseStudies.slice(0, 4).map((_, index) => {
+    // For 4 dots, position them at 0%, 33.33%, 66.66%, 100%
+    const position = (index / 3) * 100;
+    const cardScrollPosition = (index * CARD_WIDTH);
+    const containerWidth = scrollContainerRef.current?.clientWidth || 0;
+    const currentScroll = scrollContainerRef.current?.scrollLeft || 0;
+    const viewportPadding = window.innerWidth * 0.5;
+    const cardCenterScroll = cardScrollPosition + viewportPadding - (containerWidth / 2) + (450 / 2);
+    const isActive = Math.abs(currentScroll - cardCenterScroll) < CARD_WIDTH / 2;
+    
+    return (
+      <ProgressDot 
+        key={index} 
+        style={{ left: `${position}%` }}
+        $isActive={isActive}
+        onClick={(e) => {
+          e.stopPropagation();
+          scrollToCardCenter(index);
+        }}
+      />
+    );
+  })}
+</ScrollProgress>
     </SectionBodyContainer>
   );
 };
 
 export default SectionBody;
+
 const handAnimation = keyframes`
   0%, 100% {
     transform: translateX(-8px);
@@ -316,7 +551,7 @@ const CaseStudiesContainer = styled.div`
   overflow-x: auto;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  padding: 3rem 4rem;
+  padding: 0rem 4rem 1rem 4rem;
   cursor: grab;
   
   scroll-snap-type: x mandatory;
@@ -354,10 +589,11 @@ const CaseStudiesGrid = styled.div`
   grid-auto-flow: column;
   grid-auto-columns: minmax(320px, 1fr);
   gap: 5rem !important;
-  padding-right: 8rem;
+  padding-right: 50vw;
+  padding-left: 50vw;
 
   & > * {
-    scroll-snap-align: start;
+    scroll-snap-align: center;
     scroll-snap-stop: always;
   }
 
@@ -369,7 +605,6 @@ const CaseStudiesGrid = styled.div`
   @media (min-width: 1024px) {
     grid-auto-columns: minmax(420px, 1fr);
     gap: 3.5rem;
-    padding-right: 12rem; 
   }
 `;
 
@@ -382,6 +617,55 @@ const CardWrapper = styled.div`
   
   &:hover * {
     user-select: text;
+  }
+`;
+
+const ArrowButton = styled.button`
+  position: absolute;
+  top: 84%;
+  ${props => props.$position}: 8rem;
+  min-width: 32px;
+  height: 32px;
+  padding: 3px 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--blue);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+
+  &:hover:not(:disabled) {
+    opacity: 1;
+    transform: translateY(-10%) scale(1.1);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(-10%) scale(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  @media (max-width: 1024px) {
+    ${props => props.$position}: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
   }
 `;
 
@@ -472,11 +756,26 @@ const ScrollProgress = styled.div`
   width: 80vw;
   margin: 0 auto;
   background: rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+  overflow: visible;
   z-index: 5;
+  cursor: pointer;
+  transition: height 0.2s ease;
+  user-select: none;
+  
+  &:hover {
+    height: 6px;
+  }
+  
+  &:active {
+    cursor: grabbing;
+  }
   
   @media (max-width: 768px) {
     height: 2px;
+    
+    &:hover {
+      height: 4px;
+    }
   }
 `;
 
@@ -492,60 +791,38 @@ const ProgressBar = styled.div`
   }
 `;
 
-const KeyboardHint = styled.div`
+const ProgressDot = styled.div`
   position: absolute;
-  top: -1rem;
-  right: 2rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  opacity: 0.6;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  z-index: 10;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 0.75rem 1.25rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: ${props => props.$isActive ? 'var(--blue)' : 'rgba(0, 0, 0, 0.3)'};
+  border: 2px solid white;
+  transition: all 0.3s ease;
+  z-index: 2;
+  pointer-events: auto;
+  cursor: pointer;
   
   &:hover {
-    opacity: 1;
+    width: 14px;
+    height: 14px;
+    background: ${props => props.$isActive ? 'var(--blue)' : 'rgba(0, 0, 0, 0.5)'};
+    transform: translate(-50%, -50%) scale(1.1);
   }
   
-  @media (max-width: 1024px) {
-    display: none;
-  }
-  
-  @media (prefers-reduced-transparency: reduce) {
-    background: white;
-    backdrop-filter: none;
+  @media (max-width: 768px) {
+    width: 10px;
+    height: 10px;
+    border-width: 1.5px;
   }
 `;
 
-const Kbd = styled.kbd`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 32px;
-  height: 32px;
-  padding: 0 10px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--blue);;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
-
-const HintTextSmall = styled.span`
-  font-size: 0.8rem;
-  color: var(--blue);
-  font-weight: 500;
-  margin-left: 0.5rem;
-  letter-spacing: 0.2px;
-  white-space: nowrap;
+const InvisiblePlaceholder = styled.div`
+  width: 450px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
 `;

@@ -142,7 +142,7 @@ const CardContainer = styled.div`
   flex-direction: column;
   border: 1px solid rgba(0, 0, 0, 0.05);
   padding: 0.625rem;
-  margin: 0 6rem;
+  /* margin: 0 -6rem; */
   position: relative;
 
   &:hover {
