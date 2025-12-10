@@ -42,11 +42,11 @@ export default ProgressIndicator;
 
 const ScrollProgress = styled.div`
   position: absolute;
-  bottom: 3rem;
+  bottom: 5rem;
   left: 0;
   right: 0;
-  height: 3px;
-  width: 80vw;
+  height: 4px;
+  width: 66vw;
   margin: 0 auto;
   background: rgba(2, 60, 113, 0.4);
   overflow: visible;
@@ -54,10 +54,6 @@ const ScrollProgress = styled.div`
   cursor: pointer;
   transition: height 0.2s ease;
   user-select: none;
-  
-  &:hover {
-    height: 6px;
-  }
   
   &:active {
     cursor: grabbing;
@@ -74,7 +70,7 @@ const ScrollProgress = styled.div`
 
 const ProgressBar = styled.div`
   height: 100%;
-  background: linear-gradient(90deg, #1a1a1a, #023C71);
+  background: linear-gradient(90deg, rgba(2, 60, 113, .4), #023C71);
   width: 0%;
   transition: width 0.15s ease-out;
   border-radius: 0 2px 2px 0;
@@ -91,7 +87,7 @@ const ProgressDot = styled.div`
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: ${props => props.$isActive ? '#BD3B3D' : 'rgba(2, 60, 113, 0.3)'};
+  background: ${props => props.$isActive ? '#BD3B3D' : 'rgba(2, 60, 113, 1)'};
   border: 2px solid white;
   transition: all 0.3s ease;
   z-index: 2;

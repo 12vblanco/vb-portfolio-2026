@@ -9,7 +9,7 @@ const CarouselControls = ({
 }) => {
   return (
     <>
-      <ArrowButton 
+      {/* <ArrowButton 
         $position="left" 
         onClick={scrollToPrevCard}
         disabled={!canScrollLeft}
@@ -29,7 +29,7 @@ const CarouselControls = ({
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-      </ArrowButton>
+      </ArrowButton> */}
     </>
   );
 };
@@ -38,7 +38,7 @@ export default CarouselControls;
 
 const ArrowButton = styled.button`
   position: absolute;
-  top: 84%;
+  top: 85.8%;
   ${props => props.$position}: 8rem;
   min-width: 32px;
   height: 32px;

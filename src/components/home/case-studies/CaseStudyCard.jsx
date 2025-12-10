@@ -115,13 +115,12 @@ const CaseStudyCard = ({ study }) => {
             <ClientName>{study.client}</ClientName>
             <CardTitle>{study.title}</CardTitle>
           </CardHeader>
-          {/* Debug info */}
-          <DebugInfo>
-            Video URL: {videoSrc ? '✓' : '✗'} | 
-            Loaded: {videoLoaded ? '✓' : '✗'} |
-            Showing: {showVideo ? '✓' : '✗'} |
-            Error: {videoError ? '✗' : '✓'}
-          </DebugInfo>
+          <Tags>
+            React.js | 
+            Animations |
+            Figma |
+            GitHub
+          </Tags>
         </CardContent>
       </CardBody>
     </CardContainer>
@@ -147,7 +146,10 @@ const CardContainer = styled.div`
 
   &:hover {
     transform: translateY(-12px) scale(1.01);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    height: 570px;
+    width: 480px;
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.12);
+    z-index: 222;
   }
 `;
 
@@ -268,9 +270,10 @@ const ClientName = styled.h3`
   letter-spacing: 0.5px;
 `;
 
-const DebugInfo = styled.div`
-  font-size: 10px;
-  color: #999;
+const Tags = styled.div`
+  font-size: 12px;
+  color: var(--blue);
   margin-top: 5px;
   font-family: monospace;
+  opacity: .5;
 `;

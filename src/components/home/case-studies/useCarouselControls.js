@@ -36,34 +36,27 @@ export const useCarouselControls = (caseStudies) => {
   }, []);
 
   // Function to update focused card based on scroll position
-  const updateFocusedCard = useCallback(() => {
-    if (!scrollContainerRef.current) return;
-    
-    const container = scrollContainerRef.current;
-    const currentScroll = container.scrollLeft;
-    const containerWidth = container.clientWidth;
-    
-    // Calculate which card is closest to being centered
-    const viewportPadding = window.innerWidth * 0.5;
-    let closestCardIndex = 0;
-    let minDistance = Infinity;
-    
-    caseStudies.forEach((_, index) => {
-      const cardScrollPosition = (index * CARD_WIDTH);
-      const cardCenterScroll = cardScrollPosition + viewportPadding - (containerWidth / 2) + (450 / 2);
-      const distance = Math.abs(currentScroll - cardCenterScroll);
-      
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestCardIndex = index;
-      }
-    });
-    
-    // Update focused card if it changed
-    if (closestCardIndex !== focusedCardIndex) {
-      setFocusedCardIndex(closestCardIndex);
-    }
-  }, [CARD_WIDTH, focusedCardIndex, caseStudies]);
+// In useCarouselControls.js, update the updateFocusedCard function:
+const updateFocusedCard = useCallback(() => {
+  if (!scrollContainerRef.current) return;
+  
+  const container = scrollContainerRef.current;
+  const currentScroll = container.scrollLeft;
+  
+  // Simple calculation: which card are we closest to based on scroll position?
+  // Each card takes CARD_WIDTH pixels, so card index = round(scrollPosition / CARD_WIDTH)
+  const calculatedIndex = Math.round(currentScroll / CARD_WIDTH);
+  
+  // Clamp the index between 0 and totalCards - 1
+  const totalCards = caseStudies.length;
+  const clampedIndex = Math.max(0, Math.min(totalCards - 1, calculatedIndex));
+  
+  // Update focused card if it changed
+  if (clampedIndex !== focusedCardIndex) {
+    console.log(`Focused card updated: ${focusedCardIndex} -> ${clampedIndex}, scroll: ${currentScroll}, cardWidth: ${CARD_WIDTH}`);
+    setFocusedCardIndex(clampedIndex);
+  }
+}, [CARD_WIDTH, focusedCardIndex, caseStudies.length]);
 
   const calculateVelocity = useCallback((currentPosition) => {
     const now = Date.now();
