@@ -1,0 +1,30 @@
+// src/components/professional-experience/AccordionItem.jsx
+import styled from "styled-components";
+import AccordionContent from './AccordionContent';
+import AccordionHeader from './AccordionHeader';
+
+
+const AccordionItem = ({ experience, isOpen, onToggle }) => {
+  return (
+    <ItemContainer>
+      <AccordionHeader 
+        experience={experience}
+        onClick={onToggle}
+      />
+      {isOpen && experience.hasImages && (
+        <AccordionContent />
+      )}
+    </ItemContainer>
+  );
+};
+
+const ItemContainer = styled.div`
+  border-bottom: 1px solid #333;
+  transition: all 0.3s ease;
+  
+  &:last-child {
+    border-bottom: 1px solid #333;
+  }
+`;
+
+export default AccordionItem;

@@ -23,6 +23,7 @@ const SectionContainer = styled.div`
   flex-direction: column;
   height: calc(100vh - 70px);
   border-bottom: 1px black solid;
+  padding-bottom: 70px;
 `;
 
 

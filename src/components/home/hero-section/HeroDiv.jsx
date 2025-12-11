@@ -45,11 +45,12 @@ const Container = styled.div`
   background-repeat: no-repeat;
   /* background-attachment: fixed; */
   display: flex;
+  flex-direction: column;
+  overflow: hidden;
   flex-wrap: wrap;
+  max-height: calc(100vh - 70px);
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: calc(100vh - 70px);
   border: solid;
   border-width: 0 1px 1px 0;
   @media (max-width: 600px) {
@@ -60,18 +61,15 @@ const Container = styled.div`
 const Div = styled.div`
   display: flex;
   width: 100%;
-  height: 100%;
   max-width: 1280px;
   justify-content: center;
   align-items: center;
-  margin-top: -2rem;
+  /* margin-top: -2rem; */
 `;
 
 const DivContainer = styled.div`
   display: flex;
   width: 100%;
-  height: 100%;
-  max-width: 1280px;
 
   @media (max-width: 600px) {
     flex-direction: column;
@@ -85,7 +83,6 @@ const HeroText = styled.div`
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  height: 100%;
   min-width: 284px;
   @media (max-width: 600px) {
     max-width: 80vw;
@@ -103,7 +100,6 @@ const HeroImg = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100%;
 `;
 
 const Img = styled.img`
@@ -174,7 +170,7 @@ const QuoteText = styled.p`
   align-items: flex-start;
   text-align: left;
   max-width: 82%;
-  margin-top: -7rem;
+  margin-top: 3rem;
   font-style: italic;
   font-weight: 500;
   font-size: 18px;
@@ -188,7 +184,7 @@ const QuoteText = styled.p`
 
 const HomeTag = styled.div`
   position: relative;
-  top: -500px;
+  top: 0;
 `;
 
 const CTAContainer = styled.div`

@@ -72,6 +72,7 @@ const Div = styled.div`
   height: 100%;
   justify-content: center;
   align-items: center;
+  margin-bottom: 70px;
   @media (max-width: 440px) {
     display: none;
   }

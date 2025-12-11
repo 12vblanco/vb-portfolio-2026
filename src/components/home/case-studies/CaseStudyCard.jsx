@@ -140,6 +140,7 @@ const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
   border: 1px solid rgba(0, 0, 0, 0.05);
+  margin-top: 2rem;
   padding: 0.625rem;
   /* margin: 0 -6rem; */
   position: relative;

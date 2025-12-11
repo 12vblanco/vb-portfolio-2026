@@ -40,8 +40,8 @@ export default PendoServices;
 const ServicesContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  max-width: 740px;
+  gap: 1rem;
+  max-width: 680px;
   margin: 0 auto;
   color: var(--blue);
   text-align: left;

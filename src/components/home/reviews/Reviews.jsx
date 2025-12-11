@@ -17,10 +17,9 @@ const Div = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  height: calc(70vh - 70px);
   border-bottom: 1px black solid;
     background: darkblue;
-
+  margin-top: -70px;
 `;
 
 const ReviewHeader = styled(SectionHeader)`
@@ -28,6 +27,8 @@ const ReviewHeader = styled(SectionHeader)`
   text-align: center;
   align-items: center;
   justify-content: center;
+  padding: 4rem 0 1rem 0;
+    /* max-height: calc(100vh - 70px); */
 `
 
 

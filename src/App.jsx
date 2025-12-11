@@ -4,7 +4,6 @@ import { Route, Routes } from "react-router-dom";
 import styled from "styled-components";
 import "./App.css";
 // import About from "./components/about/About";
-import Footer from "./components/shared/footer/Footer";
 // import OrchardCase from "./components/home/CaseStudies/OrchardCase";
 // import UXCase from "./components/home/CaseStudies/UXCase";
 // import VarunaCase from "./components/home/CaseStudies/VarunaCase";
@@ -84,7 +83,6 @@ function App() {
           element={<Success scrollToTop={scrollToTop} />}
         /> */}
       </Routes>
-      <Footer scrollToTop={scrollToTop} />
     </>
   );
 }

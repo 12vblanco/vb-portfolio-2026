@@ -41,6 +41,8 @@ const Div = styled.div`
   height: fit-content;
   border-bottom: 1px black solid;
   padding-bottom: 2rem;
+    max-height: calc(100vh - 70px);
+
 `;
 
 const Container = styled.div`
@@ -54,7 +56,7 @@ const FirstRow = styled.div`
   display: flex;
   width: calc(100vw - 35px);
   height: auto;
-  height: 60vh; /* 70% of viewport height */
+  height: 60vh; 
 `;
 
 const FirstCol1 = styled.div`
@@ -64,7 +66,6 @@ const FirstCol1 = styled.div`
   align-items: center;
   justify-content: center;
   color: white;
-  font-weight: bold;
   border-right: 10px solid white;
 `;
 
@@ -93,15 +94,15 @@ const SecondRowTop = styled.div`
   align-items: center;
   justify-content: center;
   color: #333;
-  font-weight: bold;
   padding: 20px;
   border-bottom: 10px solid white;
 `;
 
 const PendoCert = styled(SectionHeader)`
   margin: 0;
-  padding: 0 0 0 13vw;
+  padding: 0 0 0 10vw;
   color: #BD3B3D;
+  padding-top: 3rem;
 `
 
 const SecondRowBottom = styled.div`
@@ -111,7 +112,6 @@ const SecondRowBottom = styled.div`
   align-items: center;
   justify-content: center;
   color: white;
-  font-weight: bold;
 `;
 
 export default PendoAnalytics;
