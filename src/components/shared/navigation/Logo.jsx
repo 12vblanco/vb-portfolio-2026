@@ -17,12 +17,12 @@ const Logo = () => {
 const DivContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   width: 300px;
   justify-content: center;
   align-items: center;
-  margin-left: 6vw;
+  margin-left: 7.2vw;
   margin-top: -.5rem;
 `;
 const Div = styled.div`
@@ -39,7 +39,7 @@ const LogoText = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  font-size: 36px;
+  font-size: 39px;
   letter-spacing: -3%;
   font-weight: 500;
 

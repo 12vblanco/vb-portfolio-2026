@@ -26,7 +26,6 @@
 // src/components/professional-experience/ProfessionalExperiences.jsx
 import { useState } from 'react';
 import styled from "styled-components";
-import SectionHeader from "../../shared/SectionHeader";
 import AccordionItem from "./AccordionItem.jsx";
 
 const ProfessionalExperiences = (scrollToTop) => {
@@ -36,14 +35,16 @@ const ProfessionalExperiences = (scrollToTop) => {
     {
       company: "N-able Inc. Edinburgh, UK",
       period: "April 2024 - October 2025",
-      role: "(Pendo) Web Developer in the marketing department. 18 Months",
+      role: "(Pendo) Web Developer (JavaScript).  \n18 Months.",
       tags: ["Pendo", "HTML"],
       skills: ["CSS", "JavaScript"],
+            hasImages: true,
+
     },
     {
       company: "Orders Made Simple, Edinburgh, UK",
       period: "April 2022 - October 2024",
-      role: "Software Developer working with the MERN stack. 2.5 years (part time)",
+      role: "Software Developer (MERN stack). \n2.5 years part time.",
       tags: ["Pendo", "HTML"],
       skills: ["CSS", "JavaScript"],
       hasImages: true,
@@ -51,9 +52,11 @@ const ProfessionalExperiences = (scrollToTop) => {
     {
       company: "Edinburgh College, Edinburgh, UK",
       period: "April 2024 - October 2025",
-      role: "Website Administrator (WordPress) for 2 years",
+      role: "Website Administrator (WordPress). \n2 years part time.",
       tags: ["Pendo", "HTML"],
       skills: ["CSS", "JavaScript"],
+            hasImages: true,
+
     }
   ];
 
@@ -86,12 +89,15 @@ const ProfessionalExperiences = (scrollToTop) => {
   );
 };
 
-const SectionTop = styled(SectionHeader)`
-flex-direction: row;
-align-items: flex-start;
-justify-content: space-between;
-padding-left: 6vw;
-`
+const SectionTop = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  text-align: left;
+  width: 100%;
+  padding: 4rem 0 1rem 2.4vw;
+  margin-bottom: 1.8rem;
+`;
 
 const Div = styled.div`
   width: 100%;
@@ -105,12 +111,13 @@ const Div = styled.div`
 `;
 
 const IntroText = styled.p`
-  /* font-size: 1rem; */
-  /* color: #666; */
-  line-height: 1.5;
+  line-height: 1.2;
+  font-size: 18px;
+  font-weight: 300;
   margin: 0;
   text-align: left;
-  font-size: 1.2rem;
+  letter-spacing: -.1px;
+  padding-top: 8px;
 `;
 
 const AccordionContainer = styled.div`

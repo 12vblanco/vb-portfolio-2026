@@ -16,20 +16,26 @@ const TagsList = ({ tags, skills }) => {
 
 const Container = styled.div`
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
   justify-content: flex-end;
-  max-width: 160px;
+  max-width: 130px;
+  padding-top: 8px;
+  /* padding-left: 14%; */
 `;
 
 const Skill = styled.span`
-  background: #f3e4e6;
+  background: rgba(255, 197, 202, 0.3);
   color: #e63946;
-  border: 2px solid #e63946;
-  padding: 0.2rem 0.5rem;
-  border-radius: 8px;
+  border: 1px solid #e63946;
+  padding: 0.16rem 0.45rem;
+  border-radius: 10px;
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 500;
+  &:first-of-type {
+    background: #e63946;
+    color: #f3e4e6;
+  }
 `;
 
 export default TagsList;

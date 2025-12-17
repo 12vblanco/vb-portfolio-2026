@@ -42,7 +42,7 @@ export default ProgressIndicator;
 
 const ScrollProgress = styled.div`
   position: absolute;
-  bottom: 5rem;
+  bottom: 3rem;
   left: 0;
   right: 0;
   height: 4px;

@@ -55,6 +55,7 @@ const GalleryContainer = styled.div`
   gap: 2rem;
   width: 100%;
   height: 100%;
+  min-height: 130px;
   overflow-y: auto;
   
   /* Custom scrollbar */
@@ -83,6 +84,12 @@ const CertificateCard = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  transition: ease-in-out .4s all;
+
+  &:hover{
+    transform: scale(1.3)
+  }
+
 `;
 
 const CertificateImage = styled.img`

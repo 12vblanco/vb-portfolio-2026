@@ -1,54 +1,72 @@
 // src/components/professional-experience/ImageGrid.jsx
 import styled from "styled-components";
+import img from "../../../assets/images/prof-oms1.png";
 
 const ImageGrid = () => {
-  const placeholderText = "Software Developer working with the MERN stack. 2.5 years (part time)";
-  
   return (
-    <Grid>
-      {[1, 2].map((i) => (
-        <ImageCard key={i}>
-          <Placeholder>
-            <PlaceholderText>{placeholderText}</PlaceholderText>
-          </Placeholder>
-        </ImageCard>
-      ))}
-    </Grid>
+    <Container>
+      <DescriptionColumn> 
+        <DescriptionCell>
+        {[1, 2].map((i) => (
+          <ImageCard key={i}>
+          </ImageCard>
+        ))}</DescriptionCell>
+          <DescriptionCell>
+            <Paragraph>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+        </Paragraph>
+        <Paragraph>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint           Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </Paragraph>
+        </DescriptionCell>
+
+        
+      </DescriptionColumn>
+    </Container>
   );
 };
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  /* max-width: 1000px; */
-    margin-left: 6vw;
-
+const Container = styled.div`
+  display: flex;
+  padding-top: .8rem;
+  width: 100%;
+  align-items: center;
+  
 `;
 
+const DescriptionColumn = styled.div`
+display: flex;
+  align-items: flex-start;
+  justify-content: space-around;  
+  flex-wrap: wrap;
+  gap: 2rem;
+  flex: 1;
+`;
+const DescriptionCell = styled.div`
+display: flex;
+  align-items: flex-start;
+  justify-content: space-around;  
+  flex-wrap: nowrap;
+  gap: 2rem;
+  flex: 1;
+`;
+
+
 const ImageCard = styled.div`
-  aspect-ratio: 1/1;
-  max-width: 260px;
-  background: #f0f0f0;
+  width: 250px;
+  height: 250px;
+    background: url(${img}) center/cover;  
   border-radius: 8px;
   overflow: hidden;
 `;
 
-const Placeholder = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-`;
-
-const PlaceholderText = styled.p`
-  font-size: 0.9rem;
-  text-align: center;
+const Paragraph = styled.p`
+  font-size: 1rem;
+  line-height: 1.6;
+  letter-spacing: -.1px;
+    max-width: 290px;
   margin: 0;
-  line-height: 1.4;
 `;
 
 export default ImageGrid;

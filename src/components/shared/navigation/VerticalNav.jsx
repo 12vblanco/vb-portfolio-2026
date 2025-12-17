@@ -32,7 +32,7 @@ const NavBox = styled.div`
   height: 100vh;
   background: ${CONSTANTS.COLOUR.white};
   width: 70px;
-  z-index: 20;
+  z-index: 22220;
   border-width: 0px 1px 1px 0px;
   border-style: solid;
   border-color: var(--blue);

@@ -10,8 +10,8 @@ const HeaderContainer = styled.div`
   flex-direction: column;
   text-align: left;
   width: 100%;
-  padding: 4rem 0 1rem 10vw;
-  margin-bottom: 2rem;
+  padding: 4rem 0 1rem 6.4vw;
+  margin-bottom: 1.8rem;
 `;
 
 export default SectionHeader;

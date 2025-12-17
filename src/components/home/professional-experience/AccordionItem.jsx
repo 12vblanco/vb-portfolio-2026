@@ -19,11 +19,12 @@ const AccordionItem = ({ experience, isOpen, onToggle }) => {
 };
 
 const ItemContainer = styled.div`
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--blue);
   transition: all 0.3s ease;
+    white-space: pre-line;
   
   &:last-child {
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--blue);
   }
 `;
 

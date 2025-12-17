@@ -280,7 +280,7 @@ const CaseStudiesGrid = styled.div`
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(320px, 1fr);
-  gap: 5rem !important;
+  gap: 4rem !important;
   padding-right: 50vw;
   padding-left: 50vw;
 

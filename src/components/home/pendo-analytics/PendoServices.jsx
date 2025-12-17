@@ -55,7 +55,7 @@ const ServiceItem = styled.div`
 
 const IconContainer = styled.div`
   flex-shrink: 0;
-  margin-top: 0.25rem;
+  margin-top: -0.5rem;
 `;
 
 const PendoIcon = styled.img`
@@ -75,5 +75,5 @@ const ServiceTitle = styled.h4`
 
 const ServiceDescription = styled.p`
   font-size: 1.2rem;
-  line-height: 1.6;
+    max-width: 564px;
 `;

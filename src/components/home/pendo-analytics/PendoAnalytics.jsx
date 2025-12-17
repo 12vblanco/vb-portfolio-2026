@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import img from "../../../assets/images/pendo-img.jpg";
 import SectionHeader from "../../shared/SectionHeader";
 import PendoCertificates from "./PendoCertificates";
 import PendoServices from "./PendoServices";
@@ -42,7 +43,6 @@ const Div = styled.div`
   border-bottom: 1px black solid;
   padding-bottom: 2rem;
     max-height: calc(100vh - 70px);
-
 `;
 
 const Container = styled.div`
@@ -54,30 +54,26 @@ const Container = styled.div`
 
 const FirstRow = styled.div`
   display: flex;
-  width: calc(100vw - 35px);
   height: auto;
-  height: 60vh; 
 `;
 
 const FirstCol1 = styled.div`
-  flex: 1;
-  width: calc(60vw - 35px);
+  width: calc(57vw - 35px);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  border-right: 10px solid white;
 `;
 
 const FirstCol2 = styled.div`
-  flex: 1;
-  width: calc(40vw - 35px);
-  background-color: #4ECDC4;
+  width: calc(34vw - 35px);
+  background: url(${img}) center/cover;
+  background-repeat: no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: bold;
+  
 `;
 
 const SecondRow = styled.div`
@@ -93,16 +89,14 @@ const SecondRowTop = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #333;
-  padding: 20px;
-  border-bottom: 10px solid white;
+  padding: 24px 20px;
 `;
 
 const PendoCert = styled(SectionHeader)`
   margin: 0;
   padding: 0 0 0 10vw;
   color: #BD3B3D;
-  padding-top: 3rem;
+  padding-top: 1.6rem;
 `
 
 const SecondRowBottom = styled.div`
