@@ -11,8 +11,8 @@ export const reviewsData = [
   {
     id: 2,
     rating: 5,
-    title: "You can trust Victor",
-    subtitle: "Some subtitle and more Some subtitle and more Some subtitle and more",
+    title: "He's a gem!",
+    subtitle: "If you're looking for a good developer I'd recommend Victor. He’s genuinely a pleasure to work with, and I've had the chance to work with him at OMS.",
     name: "Stephen S.",
     company: "Orders Made Simple"
   },

@@ -1,8 +1,8 @@
 // src/components/cases/CaseStudyCard.jsx
 import { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
-const CaseStudyCard = ({ study }) => {
+const CaseStudyCard = ({ study, onExpand, isExpanded, isClosing, onClose }) => {
   const videoRef = useRef(null);
   const [videoError, setVideoError] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
@@ -31,11 +31,9 @@ const CaseStudyCard = ({ study }) => {
     if (!video || !videoSrc) return;
 
     const handleCanPlay = () => {
-      console.log('Video can play');
       setVideoLoaded(true);
       setShowVideo(true);
       
-      // Try to play
       video.play().catch(err => {
         console.error('Play failed:', err);
         setVideoError(true);
@@ -50,7 +48,6 @@ const CaseStudyCard = ({ study }) => {
     };
 
     const handleLoadedData = () => {
-      console.log('Video loaded data');
       setVideoLoaded(true);
     };
 
@@ -58,7 +55,6 @@ const CaseStudyCard = ({ study }) => {
     video.addEventListener('error', handleError);
     video.addEventListener('loadeddata', handleLoadedData);
 
-    // Force load
     video.load();
 
     return () => {
@@ -68,73 +64,178 @@ const CaseStudyCard = ({ study }) => {
     };
   }, [videoSrc]);
 
-  return (
-    <CardContainer>
-      <MediaContainer>
-        {/* Image - always present as fallback */}
-        <CardImage 
-          $image={imageSrc}
-          alt={`${study.title} - ${study.client}`}
-          $show={!showVideo}
-        />
-        
-        {/* Video element - always rendered if video exists */}
-        {videoSrc && (
-          <VideoElement
-            ref={videoRef}
-            muted
-            loop
-            playsInline
-            preload="auto"
-            $show={showVideo && !videoError}
-          >
-            <source src={videoSrc} type="video/mp4" />
-            Your browser does not support the video tag.
-          </VideoElement>
-        )}
-        
-        {/* Loading indicator */}
-        {videoSrc && !videoError && !showVideo && (
-          <LoadingOverlay>
-            <LoadingSpinner />
-            <div>Loading video...</div>
-          </LoadingOverlay>
-        )}
+  const handleCardClick = (e) => {
+    if (!isExpanded && onExpand) {
+      e.stopPropagation();
+      onExpand();
+    }
+  };
 
-        {/* Error state */}
-        {videoError && (
-          <ErrorOverlay>
-            ✗ Video failed to load
-          </ErrorOverlay>
-        )}
-      </MediaContainer>
-      
-      <CardBody>
-        <CardContent>
-          <CardHeader>
-            <ClientName>{study.client}</ClientName>
-            <CardTitle>{study.title}</CardTitle>
-          </CardHeader>
-          <Tags>
-            React.js | 
-            Animations |
-            Figma |
-            GitHub
-          </Tags>
-        </CardContent>
-      </CardBody>
+  const handleCloseClick = (e) => {
+    e.stopPropagation();
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  // Handle escape key
+  useEffect(() => {
+    if (!isExpanded) return;
+    
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isExpanded, onClose]);
+
+  return (
+    <CardContainer 
+      onClick={handleCardClick} 
+      $isExpanded={isExpanded}
+      $isClosing={isClosing}
+    >
+      <FlipCardInner $isExpanded={isExpanded} $isClosing={isClosing}>
+        {/* Front of card */}
+        <CardFront>
+          <MediaContainer>
+            <CardImage 
+              $image={imageSrc}
+              alt={`${study.title} - ${study.client}`}
+              $show={!showVideo}
+            />
+            
+            {videoSrc && (
+              <VideoElement
+                ref={videoRef}
+                muted
+                loop
+                playsInline
+                preload="auto"
+                $show={showVideo && !videoError}
+              >
+                <source src={videoSrc} type="video/mp4" />
+                Your browser does not support the video tag.
+              </VideoElement>
+            )}
+            
+            {videoSrc && !videoError && !showVideo && (
+              <LoadingOverlay>
+                <LoadingSpinner />
+                <div>Loading video...</div>
+              </LoadingOverlay>
+            )}
+
+            {videoError && (
+              <ErrorOverlay>
+                ✗ Video failed to load
+              </ErrorOverlay>
+            )}
+          </MediaContainer>
+          
+          <CardBody>
+            <CardContent>
+              <CardHeader>
+                <ClientName>{study.client}</ClientName>
+                <CardTitle>{study.title}</CardTitle>
+              </CardHeader>
+              <Tags>
+                React.js | 
+                Animations |
+                Figma |
+                GitHub
+              </Tags>
+            </CardContent>
+          </CardBody>
+        </CardFront>
+
+        {/* Back of card */}
+        <CardBack>
+          {isExpanded && (
+            <CloseButton onClick={handleCloseClick} aria-label="Close modal">
+              ✕
+            </CloseButton>
+          )}
+          <BackContent>
+            <BackTitle>{study.client}</BackTitle>
+            <BackSubtitle>{study.title}</BackSubtitle>
+            <BackDescription>{study.description}</BackDescription>
+            <BackTags>
+              {study.tags?.join(' | ') || 'React.js | Animations | Figma | GitHub'}
+            </BackTags>
+          </BackContent>
+        </CardBack>
+      </FlipCardInner>
     </CardContainer>
   );
 };
 
 export default CaseStudyCard;
 
+// Keyframe animations
+const expandCard = keyframes`
+  0% {
+    width: 450px;
+    height: 520px;
+    position: relative;
+    z-index: 1;
+  }
+  100% {
+    width: 80vw;
+    height: 80vh;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+  }
+`;
+
+const shrinkCard = keyframes`
+  0% {
+    width: 80vw;
+    height: 80vh;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+  }
+  100% {
+    width: 450px;
+    height: 520px;
+    position: relative;
+    z-index: 1;
+  }
+`;
+
+const flipExpand = keyframes`
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(180deg);
+  }
+`;
+
+const flipShrink = keyframes`
+  0% {
+    transform: rotateY(180deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+`;
+
 const CardContainer = styled.div`
   background: #FCFDFF;
   border-radius: 6px;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: ${props => props.$isExpanded ? 'none' : 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'};
   height: 520px;
   width: 450px;
   display: flex;
@@ -142,16 +243,75 @@ const CardContainer = styled.div`
   border: 1px solid rgba(0, 0, 0, 0.05);
   margin-top: 2rem;
   padding: 0.625rem;
-  /* margin: 0 -6rem; */
   position: relative;
+  cursor: ${props => props.$isExpanded ? 'default' : 'pointer'};
+  perspective: 2000px;
+
+  ${props => props.$isExpanded && !props.$isClosing && css`
+    animation: ${expandCard} 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    position: fixed;
+    z-index: 9999;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    height: 80vh;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  `}
+
+  ${props => props.$isClosing && css`
+    animation: ${shrinkCard} 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  `}
 
   &:hover {
-    transform: translateY(-12px) scale(1.01);
-    height: 570px;
-    width: 480px;
+    transform: ${props => props.$isExpanded ? 'translate(-50%, -50%)' : 'translateY(-12px) scale(1.01)'};
+    height: ${props => props.$isExpanded ? '80vh' : '570px'};
+    width: ${props => props.$isExpanded ? '80vw' : '480px'};
     box-shadow: 0 20px 30px rgba(0, 0, 0, 0.12);
-    z-index: 222;
+    z-index: ${props => props.$isExpanded ? '9999' : '222'};
   }
+`;
+
+const FlipCardInner = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: ${props => props.$isExpanded ? 'none' : 'transform 0.6s'};
+
+  ${props => props.$isExpanded && !props.$isClosing && css`
+    animation: ${flipExpand} 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  `}
+
+  ${props => props.$isClosing && css`
+    animation: ${flipShrink} 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  `}
+`;
+
+const CardSide = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 6px;
+  overflow: hidden;
+`;
+
+const CardFront = styled(CardSide)`
+  display: flex;
+  flex-direction: column;
+  transform: rotateY(0deg);
+`;
+
+const CardBack = styled(CardSide)`
+  background: white;
+  transform: rotateY(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 `;
 
 const MediaContainer = styled.div`
@@ -161,6 +321,7 @@ const MediaContainer = styled.div`
   overflow: hidden;
   border-radius: 6px;
   background: #000;
+  flex-shrink: 0;
 `;
 
 const CardImage = styled.div`
@@ -245,6 +406,7 @@ const CardBody = styled.div`
   display: flex;
   width: 100%;
   margin-top: 0.5rem;
+  flex-shrink: 0;
 `;
 
 const CardContent = styled.div`
@@ -277,4 +439,67 @@ const Tags = styled.div`
   margin-top: 5px;
   font-family: monospace;
   opacity: .5;
+`;
+
+const BackContent = styled.div`
+  max-width: 800px;
+  text-align: center;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: #333;
+  z-index: 10;
+  font-weight: 300;
+  line-height: 1;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.2);
+    transform: scale(1.1) rotate(90deg);
+  }
+
+  &:active {
+    transform: scale(0.95) rotate(90deg);
+  }
+`;
+
+const BackTitle = styled.h2`
+  font-size: 56px;
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+  font-weight: 700;
+`;
+
+const BackSubtitle = styled.h3`
+  font-size: 36px;
+  margin-bottom: 2rem;
+  color: #555;
+  font-weight: 400;
+`;
+
+const BackDescription = styled.p`
+  font-size: 20px;
+  line-height: 1.6;
+  color: #666;
+  margin-bottom: 2rem;
+`;
+
+const BackTags = styled.div`
+  font-size: 16px;
+  color: #999;
+  font-family: monospace;
+  letter-spacing: 1px;
 `;

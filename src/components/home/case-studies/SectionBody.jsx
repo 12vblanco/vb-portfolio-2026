@@ -1,5 +1,5 @@
 // src/components/cases/SectionBody.jsx
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { caseStudies } from '../../../data/CaseStudies';
 import CarouselControls from './CarouselControls';
@@ -9,29 +9,32 @@ import ScrollHint from './ScrollHint';
 import { useCarouselControls } from './useCarouselControls';
 
 const SectionBody = () => {
+  const [expandedCard, setExpandedCard] = useState(null);
+  const [isClosing, setIsClosing] = useState(false);
+
   const {
-  scrollContainerRef,
-  isDragging,
-  showScrollHint,
-  setShowScrollHint,
-  canScrollLeft,
-  canScrollRight,
-  scrollProgress,
-  isDraggingProgress,
-  CARD_WIDTH,
-  focusedCardIndex, // Add this
-  updateScrollButtons,
-  scrollToPrevCard,
-  scrollToNextCard,
-  scrollToCardCenter,
-  handleDragStart,
-  handleDragMove,
-  handleDragEnd,
-  updateScrollProgress,
-  handleProgressMouseDown,
-  handleProgressMouseMove,
-  handleProgressMouseUp,
-} = useCarouselControls(caseStudies);
+    scrollContainerRef,
+    isDragging,
+    showScrollHint,
+    setShowScrollHint,
+    canScrollLeft,
+    canScrollRight,
+    scrollProgress,
+    isDraggingProgress,
+    CARD_WIDTH,
+    focusedCardIndex,
+    updateScrollButtons,
+    scrollToPrevCard,
+    scrollToNextCard,
+    scrollToCardCenter,
+    handleDragStart,
+    handleDragMove,
+    handleDragEnd,
+    updateScrollProgress,
+    handleProgressMouseDown,
+    handleProgressMouseMove,
+    handleProgressMouseUp,
+  } = useCarouselControls(caseStudies);
 
   // Hide scroll hint after 3 seconds
   useEffect(() => {
@@ -46,12 +49,27 @@ const SectionBody = () => {
     const initialScroll = () => {
       if (scrollContainerRef.current) {
         setTimeout(() => {
-          scrollToCardCenter(1); // index 1 is card 2
+          scrollToCardCenter(1);
         }, 100);
       }
     };
     initialScroll();
   }, [scrollToCardCenter, scrollContainerRef]);
+
+  const handleExpandCard = useCallback((cardIndex) => {
+    if (!isDragging) {
+      setExpandedCard(cardIndex);
+      setIsClosing(false);
+    }
+  }, [isDragging]);
+
+  const handleCloseCard = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setExpandedCard(null);
+      setIsClosing(false);
+    }, 1800); // Match animation duration
+  }, []);
 
   // Mouse event handlers
   const onMouseDown = (e) => {
@@ -177,6 +195,15 @@ const SectionBody = () => {
 
   return (
     <SectionBodyContainer>
+      {/* Modal Overlay */}
+      {expandedCard !== null && (
+        <ModalOverlay 
+          onClick={handleCloseCard}
+          $isClosing={isClosing}
+          $isExpanded={expandedCard !== null}
+        />
+      )}
+
       <CaseStudiesContainer
         ref={scrollContainerRef}
         className={isDragging ? 'dragging' : ''}
@@ -187,16 +214,19 @@ const SectionBody = () => {
       >
         <CaseStudiesGrid>
           {caseStudies.map((study, index) => (
-           <CardWrapper 
-            key={study.id}
-            aria-label={`Case study ${index + 1}: ${study.title}`}
-            role="article"
-          >
+            <CardWrapper 
+              key={study.id}
+              aria-label={`Case study ${index + 1}: ${study.title}`}
+              role="article"
+            >
               <CaseStudyCard 
-                study={study} 
-                showClickMessage={index === focusedCardIndex} 
+                study={study}
+                onExpand={() => handleExpandCard(index)}
+                isExpanded={expandedCard === index}
+                isClosing={isClosing}
+                onClose={handleCloseCard}
               />
-          </CardWrapper>
+            </CardWrapper>
           ))}
           <InvisiblePlaceholder />
         </CaseStudiesGrid>
@@ -218,7 +248,7 @@ const SectionBody = () => {
         scrollContainerRef={scrollContainerRef}
         CARD_WIDTH={CARD_WIDTH}
         caseStudies={caseStudies}
-        focusedCardIndex={focusedCardIndex} // Add this
+        focusedCardIndex={focusedCardIndex}
       />
     </SectionBodyContainer>
   );
@@ -236,6 +266,20 @@ const SectionBodyContainer = styled.div`
   &:focus {
     outline: none;
   }
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: ${props => props.$isExpanded && !props.$isClosing ? 'transparent' : 'rgba(0, 0, 0, 0.7)'};
+  z-index: 9998;
+  backdrop-filter: ${props => props.$isExpanded && !props.$isClosing ? 'none' : 'blur(4px)'};
+  opacity: 1;
+  transition: background 0.4s ease-out, backdrop-filter 0.4s ease-out;
+  pointer-events: auto;
 `;
 
 const CaseStudiesContainer = styled.div`
