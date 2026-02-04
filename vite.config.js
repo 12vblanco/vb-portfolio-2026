@@ -6,9 +6,15 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     rollupOptions: {
-      input: './index.html'
+      input: {
+        main: './index.html'
+      }
     }
   },
-  publicDir: 'public',
-  base: '/'
+  // This resolves the src paths correctly
+  resolve: {
+    alias: {
+      '@': '/src'
+    }
+  }
 })
