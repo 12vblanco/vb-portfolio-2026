@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-G3WPB51996"></script>
@@ -10,17 +9,16 @@
       dataLayer.push(arguments);
     }
     gtag("js", new Date());
-
     gtag("config", "G-G3WPB51996");
   </script>
 
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/blanco.png" />
+  <!-- FIX: Correct icon type and ensure file exists -->
+  <link rel="icon" type="image/png" href="/blanco.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description"
     content="Customize your website design and enhance user engagement with our tailored web development solutions. get in touch to discuss your project today." />
-  <meta name="keywords" content="web design, web development, user experience, interaction, engagement, conversions, Wordpress, Shopify, maintenance, optimization, search engine ranking, performance, bespoke, tailored, Edinburgh, Scotland
-      " />
+  <meta name="keywords" content="web design, web development, user experience, interaction, engagement, conversions, Wordpress, Shopify, maintenance, optimization, search engine ranking, performance, bespoke, tailored, Edinburgh, Scotland" />
   <meta name="robots" content="index,follow" />
   <meta name="author" content="Victor Blanco" />
   <link rel="canonical" href="https://www.victorblancoweb.com" />
@@ -39,7 +37,9 @@
 
 <body>
   <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
+  <!-- FIX: This should point to the built JS file, not source file -->
+  <script type="module" src="/main.jsx"></script>
+  <!-- OR if using Vite: -->
+  <!-- <script type="module" src="/assets/index-[hash].js"></script> -->
 </body>
-
 </html>
