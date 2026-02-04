@@ -1,7 +1,14 @@
-export default {
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  plugins: [react()],
   build: {
-    outDir: '.',  // If publishing from root
-    // or
-    outDir: 'dist',  // If using a dist folder
-  }
-}
+    outDir: 'dist',
+    rollupOptions: {
+      input: './index.html'
+    }
+  },
+  publicDir: 'public',
+  base: '/'
+})
